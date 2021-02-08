@@ -1,8 +1,6 @@
 package com.company.TransportStreamPacket;
 
 
-
-
 /*
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 |                                                   4-byte Transport Stream Header
@@ -37,51 +35,50 @@ package com.company.TransportStreamPacket;
 */
 
 import com.company.ByteParser.ByteParser;
+import com.company.Table.Section;
+import com.company.Table.SectionHandler;
+import com.company.TransportStreamHeader.TransportStreamHeader;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class TransportStreamPacket {
 
-    int syncByte, pid,transportErrorIndicator,payloadUnitStartIndicator,transportPriority,transportScramblingControl,adaptionFieldControl,continuityCounter;
-    byte[] payload;
-    String adaptionField;
+    // The elements of a ts packet.
+    byte[] headerBytes, sectionHeaderBytes, sectionBytes;
+    Section section;
 
-    static ArrayList<TransportStreamPacket> streamList = new ArrayList<>();
+    TransportStreamHeader transportStreamHeader;
+
 
     public TransportStreamPacket(byte[] bytes, ByteParser byteParser) {
-        this.syncByte = byteParser.getValueOfBytes(bytes, 0, 8);
-        this.pid = byteParser.getValueOfBytes(bytes, 11, 13);
-        this.payload = Arrays.copyOfRange(bytes, 3, 188);
 
-        /* Other values, but not needed. For performance outcommented */
-/*
+        // The segments of a transport stream packet
+        this.headerBytes = Arrays.copyOfRange(bytes, 0, 4);
+        this.sectionHeaderBytes = Arrays.copyOfRange(bytes, 5, 8);
+        this.sectionBytes = Arrays.copyOfRange(bytes, 8, 189);
 
-        this.transportErrorIndicator = byteParser.getValueOfBytes(bytes, 8, 1);
-        this.payloadUnitStartIndicator = byteParser.getValueOfBytes(bytes, 9, 1);
-        this.transportPriority = byteParser.getValueOfBytes(bytes, 10, 1);
-
-        this.transportScramblingControl = byteParser.getValueOfBytes(bytes, 24, 2);
-        this.adaptionFieldControl = byteParser.getValueOfBytes(bytes, 26, 2);
-        this.continuityCounter = byteParser.getValueOfBytes(bytes, 28, 4);
-
-
-        if (this.adaptionFieldControl == 10 || this.adaptionFieldControl == 11) {
-            this.adaptionField = "Adaption Field";
+        // create the objects of these segments
+        transportStreamHeader = new TransportStreamHeader(headerBytes, byteParser);
+        this.section = SectionHandler.handleTableByPID(this, byteParser);
+        if (this.section != null) {
+            this.section.handleSectionData(this, byteParser);
         }
-        if (this.adaptionFieldControl == 1) {
-            this.payload = Arrays.copyOfRange(bytes, 3, 188);
-        }
-*/
-        //streamList.add(this);
+
 
     }
 
 
-    public int getPid() {
-        return pid;
+    public byte[] getSectionHeaderBytes() {
+        return sectionHeaderBytes;
     }
 
+    public byte[] getSectionBytes() {
+        return sectionBytes;
+    }
+
+    public TransportStreamHeader getTransportStreamHeader() {
+        return transportStreamHeader;
+    }
 
 
 }

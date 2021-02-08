@@ -46,7 +46,7 @@ public class MPEGValidatorTest {
     @DisplayName("Process a byte[] with correct size, and the Sync-Flag(0x47). Packet MPEG conform!")
     public void PassTest() {
         byte[] byteArray = new byte[188];
-        byteArray[0]=0x47;
+        byteArray[0] = 0x47;
         assertEquals(true, MPEGValidator.isMpegConform(byteArray));
     }
 

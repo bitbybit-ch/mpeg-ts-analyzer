@@ -3,7 +3,8 @@ package com.company.MPEGChecker;
 
 public class MPEGValidator {
 
-    /** Check if the byte-array is MPEG conform.
+    /**
+     * Check if the byte-array is MPEG conform.
      *
      * @param bytes MPEG transportstream-packet
      * @return is MPEG conform or not

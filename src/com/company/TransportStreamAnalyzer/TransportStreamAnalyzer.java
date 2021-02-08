@@ -3,7 +3,7 @@ package com.company.TransportStreamAnalyzer;
 
 import com.company.Benchmark.Benchmark;
 import com.company.ByteParser.ByteParser;
-import com.company.ByteParser.ByteParserDefault;
+import com.company.ByteParser.ByteParserBitMask;
 import com.company.MPEGChecker.MPEGValidator;
 import com.company.Timer.Timer;
 import com.company.TransportStreamPacket.TransportStreamPacket;
@@ -23,7 +23,7 @@ public class TransportStreamAnalyzer implements ITransportStreamReaderObserver {
     public TransportStreamAnalyzer(TransportStreamReader transportStreamReader) {
         this.transportStreamReader = transportStreamReader;
         this.transportStreamReader.attachObserver(this);
-        byteParser = new ByteParserDefault();
+        byteParser = new ByteParserBitMask();
     }
 
 
@@ -31,7 +31,7 @@ public class TransportStreamAnalyzer implements ITransportStreamReaderObserver {
         this.timer = timer;
         this.transportStreamReader = transportStreamReader;
         this.transportStreamReader.attachObserver(this);
-        byteParser = new ByteParserDefault();
+        byteParser = new ByteParserBitMask();
     }
 
 
@@ -55,10 +55,7 @@ public class TransportStreamAnalyzer implements ITransportStreamReaderObserver {
     @Override
     public void onNext188Bytes(byte[] bytes) {
         if (MPEGValidator.isMpegConform(bytes)) {
-            transportStreamPacket = new TransportStreamPacket(bytes,byteParser);
-            if(transportStreamPacket.getPid() ==0 || transportStreamPacket.getPid() ==0 || transportStreamPacket.getPid() ==0 ||transportStreamPacket.getPid() ==0){
-                System.out.println("PMT");
-            }
+            TransportStreamPacket tsPacket = new TransportStreamPacket(bytes,byteParser);
         }
     }
 
